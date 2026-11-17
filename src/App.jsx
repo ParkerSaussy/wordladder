@@ -17,6 +17,7 @@ function App() {
         </div>
         <div>
           <h1>Get started</h1>
+          <h4>This is content for a test commit</h4>
           <p>
             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
           </p>
