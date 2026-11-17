@@ -1,123 +1,84 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useWordLadderGame } from './hooks/useWordLadderGame';
+import Toolbar from './components/Toolbar';
+import HelpModal from './components/HelpModal';
+import LadderRow from './components/LadderRow';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const {
+    phase,
+    error,
+    rows,
+    guessCount,
+    message,
+    showHelp,
+    config,
+    setLetter,
+    submitGuess,
+    requestHint,
+    giveUp,
+    restart,
+    toggleHelp,
+  } = useWordLadderGame();
+
+  if (phase === 'loading') {
+    return (
+      <main id="word-ladder" className="word-ladder word-ladder--loading">
+        <p>Loading the word ladder…</p>
+      </main>
+    );
+  }
+
+  if (phase === 'error') {
+    return (
+      <main id="word-ladder" className="word-ladder word-ladder--error">
+        <p>Something went wrong: {error}</p>
+      </main>
+    );
+  }
+
+  const gameOver = phase === 'won' || phase === 'gaveup';
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <h4>This is content for a test commit</h4>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <main id="word-ladder" className="word-ladder">
+      <header className="word-ladder__header">
+        <p className="word-ladder__tab">{config.tabTitle}</p>
+        <h1>{config.title}</h1>
+        <p className="word-ladder__instructions">{config.instructions}</p>
+      </header>
 
-      <div className="ticks"></div>
+      <Toolbar
+        config={config}
+        onHelp={toggleHelp}
+        onRestart={restart}
+        onGiveUp={giveUp}
+        onHint={requestHint}
+        disabled={gameOver}
+      />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      <p className="word-ladder__count">
+        {config.guessCountLabel}
+        {guessCount}
+      </p>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {message && <p className={`word-ladder__message word-ladder__message--${message.tone}`}>{message.text}</p>}
+
+      <div className="ladder">
+        {rows.map((row, index) => (
+          <LadderRow
+            key={index}
+            row={row}
+            rowIndex={index}
+            config={config}
+            onLetterChange={setLetter}
+            onSubmit={submitGuess}
+          />
+        ))}
+      </div>
+
+      {showHelp && <HelpModal config={config} onClose={toggleHelp} />}
+    </main>
+  );
 }
 
-export default App
+export default App;
