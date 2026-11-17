@@ -52,3 +52,11 @@ Tests live in [tests/](tests) and run with [Vitest](https://vitest.dev/):
 
 This project is bootstrapped with Vite's React template, providing HMR and
 ESLint rules out of the box.
+
+## Copyright & License
+
+Word Ladder — code, game concept, and design — is copyright Gordon Saussy and
+Parker Saussy. See [LICENSE](LICENSE) for the full terms: credit to Gordon and
+Parker Saussy must be preserved, and the Software may not be used externally
+for commercial gain or profit without their express written consent.
+
